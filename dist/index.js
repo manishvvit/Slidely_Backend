@@ -34,12 +34,7 @@ app.post('/submit', async (req, res) => {
     }
     catch (error) {
         console.error('Error submitting form:', error);
-        if (error && typeof error === 'object' && 'code' in error && error['code'] === 'ENOENT') {
-            res.status(500).json({ error: 'An error occurred while processing your request.' });
-        }
-        else {
-            res.status(500).json({ error: 'An unexpected error occurred.' });
-        }
+        res.status(500).json({ error: 'An unexpected error occurred.' });
     }
 });
 // Endpoint to read a specific submission by index
@@ -60,6 +55,59 @@ app.get('/read', async (req, res) => {
     }
     catch (error) {
         console.error('Error reading submission:', error);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+// Endpoint to edit a submission by index
+app.put('/edit', async (req, res) => {
+    try {
+        const index = Number(req.query.index);
+        const { name, email, phone, github, stopwatchTime } = req.body;
+        // Validate index parameter
+        if (isNaN(index)) {
+            return res.status(400).json({ error: 'Invalid index parameter. It should be a number.' });
+        }
+        // Validate input fields
+        if (!name || !email || !phone || !github || !stopwatchTime) {
+            return res.status(400).json({ error: 'All fields are required for updating.' });
+        }
+        const submissions = await readSubmissions();
+        // Validate index range
+        if (index < 0 || index >= submissions.length) {
+            return res.status(404).json({ error: 'Submission not found.' });
+        }
+        // Update the submission at the specified index
+        submissions[index] = { name, email, phone, github, stopwatchTime };
+        // Write updated submissions back to db.json
+        await writeSubmissions(submissions);
+        res.json({ message: 'Submission updated successfully!', submission: submissions[index] });
+    }
+    catch (error) {
+        console.error('Error editing submission:', error);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
+});
+// Endpoint to delete a submission by index
+app.delete('/delete', async (req, res) => {
+    try {
+        const index = Number(req.query.index);
+        // Validate index parameter
+        if (isNaN(index)) {
+            return res.status(400).json({ error: 'Invalid index parameter. It should be a number.' });
+        }
+        const submissions = await readSubmissions();
+        // Validate index range
+        if (index < 0 || index >= submissions.length) {
+            return res.status(404).json({ error: 'Submission not found.' });
+        }
+        // Remove the submission at the specified index
+        const deletedSubmission = submissions.splice(index, 1);
+        // Write updated submissions back to db.json
+        await writeSubmissions(submissions);
+        res.json({ message: 'Submission deleted successfully!', submission: deletedSubmission });
+    }
+    catch (error) {
+        console.error('Error deleting submission:', error);
         res.status(500).json({ error: 'An error occurred while processing your request.' });
     }
 });

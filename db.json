@@ -1,45 +1,10 @@
 [
   {
-    "name": "m",
-    "email": "d",
-    "phone": "f",
-    "github": "g",
-    "stopwatchTime": "00:00:10"
-  },
-  {
     "name": "manish",
     "email": "manishnitcalicut@gmail.com",
     "phone": "6200064858",
     "github": "manish.io",
     "stopwatchTime": "00:00:05"
-  },
-  {
-    "name": "m",
-    "email": "g",
-    "phone": "l",
-    "github": "c",
-    "stopwatchTime": "00:00:01"
-  },
-  {
-    "name": "hh",
-    "email": "msms",
-    "phone": "jdd",
-    "github": "ldskkd",
-    "stopwatchTime": "00:00:00"
-  },
-  {
-    "name": "manish",
-    "email": "kk",
-    "phone": "6",
-    "github": "mss",
-    "stopwatchTime": "00:00:02"
-  },
-  {
-    "name": "d",
-    "email": "f",
-    "phone": "d",
-    "github": "f",
-    "stopwatchTime": "00:00:00"
   },
   {
     "name": "manish kumar",
@@ -54,5 +19,19 @@
     "phone": "76777888999",
     "github": "ritu.io",
     "stopwatchTime": "00:00:00"
+  },
+  {
+    "name": "Rani bhagat",
+    "email": "krani@gmail.com",
+    "phone": "65345566777",
+    "github": "rani.io",
+    "stopwatchTime": "00:00:06"
+  },
+  {
+    "name": "Arpit anand ",
+    "email": "arpitanand@gmail.com",
+    "phone": "65377788899",
+    "github": "arpit.io",
+    "stopwatchTime": "00:00:34"
   }
 ]
