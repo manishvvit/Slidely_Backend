@@ -1,6 +1,6 @@
 # Slidely AI Backend Server
 
-Welcome to the Slidely AI Backend Server repository! This project provides the backend server implementation for handling form submissions and managing data using a JSON file database.
+Welcome to the Slidely AI Backend Server repository! This project implements the backend server for handling form submissions and managing data using a JSON file database.
 
 ## Technologies Used
 
@@ -23,3 +23,4 @@ Before you begin, ensure you have the following installed on your machine:
    ```bash
    git clone https://github.com/your-username/Slidely_Backend.git
    cd Slidely_Backend
+   npm start
