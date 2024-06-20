@@ -37,7 +37,11 @@ app.post('/submit', async (req: Request, res: Response) => {
     res.json({ message: 'Submission saved successfully!', submission: newSubmission });
   } catch (error) {
     console.error('Error submitting form:', error);
-    res.status(500).json({ error: 'An unexpected error occurred.' });
+    if (error && typeof error === 'object' && 'code' in error && error['code'] === 'ENOENT') {
+      res.status(500).json({ error: 'An error occurred while processing your request.' });
+    } else {
+      res.status(500).json({ error: 'An unexpected error occurred.' });
+    }
   }
 });
 
@@ -66,20 +70,15 @@ app.get('/read', async (req: Request, res: Response) => {
   }
 });
 
-// Endpoint to edit a submission by index
+// Endpoint to edit a specific submission by index
 app.put('/edit', async (req: Request, res: Response) => {
   try {
     const index = Number(req.query.index);
     const { name, email, phone, github, stopwatchTime } = req.body;
 
-    // Validate index parameter
-    if (isNaN(index)) {
-      return res.status(400).json({ error: 'Invalid index parameter. It should be a number.' });
-    }
-
     // Validate input fields
     if (!name || !email || !phone || !github || !stopwatchTime) {
-      return res.status(400).json({ error: 'All fields are required for updating.' });
+      return res.status(400).json({ error: 'All fields are required.' });
     }
 
     const submissions = await readSubmissions();
@@ -89,7 +88,7 @@ app.put('/edit', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Submission not found.' });
     }
 
-    // Update the submission at the specified index
+    // Update submission
     submissions[index] = { name, email, phone, github, stopwatchTime };
 
     // Write updated submissions back to db.json
@@ -97,20 +96,15 @@ app.put('/edit', async (req: Request, res: Response) => {
 
     res.json({ message: 'Submission updated successfully!', submission: submissions[index] });
   } catch (error) {
-    console.error('Error editing submission:', error);
+    console.error('Error updating submission:', error);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
 });
 
-// Endpoint to delete a submission by index
+// Endpoint to delete a specific submission by index
 app.delete('/delete', async (req: Request, res: Response) => {
   try {
     const index = Number(req.query.index);
-
-    // Validate index parameter
-    if (isNaN(index)) {
-      return res.status(400).json({ error: 'Invalid index parameter. It should be a number.' });
-    }
 
     const submissions = await readSubmissions();
 
@@ -119,8 +113,8 @@ app.delete('/delete', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Submission not found.' });
     }
 
-    // Remove the submission at the specified index
-    const deletedSubmission = submissions.splice(index, 1);
+    // Remove submission
+    const deletedSubmission = submissions.splice(index, 1)[0];
 
     // Write updated submissions back to db.json
     await writeSubmissions(submissions);
@@ -128,6 +122,37 @@ app.delete('/delete', async (req: Request, res: Response) => {
     res.json({ message: 'Submission deleted successfully!', submission: deletedSubmission });
   } catch (error) {
     console.error('Error deleting submission:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
+});
+
+// Endpoint to search submissions by name, email, phone, or github
+app.get('/search', async (req: Request, res: Response) => {
+  try {
+    const query = req.query.query?.toString().toLowerCase() || '';
+    const submissions = await readSubmissions();
+
+    const filteredSubmissions = submissions.filter(submission => 
+      submission.name.toLowerCase().includes(query) ||
+      submission.email.toLowerCase().includes(query) ||
+      submission.phone.toLowerCase().includes(query) ||
+      submission.github.toLowerCase().includes(query)
+    );
+
+    res.json(filteredSubmissions);
+  } catch (error) {
+    console.error('Error searching submissions:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
+  }
+});
+
+// Endpoint to get total count of submissions
+app.get('/count', async (req: Request, res: Response) => {
+  try {
+    const submissions = await readSubmissions();
+    res.json({ count: submissions.length });
+  } catch (error) {
+    console.error('Error fetching total submissions count:', error);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
 });
